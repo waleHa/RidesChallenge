@@ -1,4 +1,4 @@
-package com.ibm.core.common
+package com.ibm.core
 
 import kotlinx.coroutines.flow.Flow
 

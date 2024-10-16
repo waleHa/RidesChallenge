@@ -1,4 +1,8 @@
 package com.ibm.rides
 
-class RidesApplication {
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class RidesApplication: Application() {
 }

@@ -5,17 +5,10 @@
 
     <fragment
         android:id="@+id/vehicleListFragment"
-        android:name="com.ibm.rides.ui.vehiclelist.VehicleListFragment"
+        android:name="com.ibm.rides.presentation.vehicle.vehiclelist.VehicleListFragment"
         android:label="Vehicle List">
-        <action
-            android:id="@+id/action_vehicleListFragment_to_vehicleDetailFragment"
-            app:destination="@id/vehicleDetailFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/vehicleDetailFragment"
-        android:name="com.ibm.rides.presentation.ui.vehicledetail.VehicleDetailFragment">
-        <!-- No android:label here, we will set it dynamically -->
-    </fragment>
+
 
 </navigation>

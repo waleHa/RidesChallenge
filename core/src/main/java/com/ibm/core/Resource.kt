@@ -1,5 +1,6 @@
-package com.ibm.core.common
+package com.ibm.core
 
+//state management using a sealed class to handle different states (loading, success, error).
 sealed class Resource<T>(
     val data: T? = null,
     val message: String? = null

@@ -1,25 +1,28 @@
-package com.ibm.rides.ui.vehiclelist
+package com.ibm.rides.presentation.vehicle.vehiclelist
 
 import VehicleAdapter
+import android.R
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ibm.core.Resource
 import com.ibm.domain.model.VehicleResponse
-import com.ibm.rides.R
-import com.ibm.core.common.Resource
+import com.ibm.domain.usecase.GetVehiclesUseCase
 import com.ibm.rides.databinding.FragmentVehicleListBinding
-import com.ibm.rides.ui.VehicleListViewModel
-import com.ibm.rides.ui.vehicledetail.VehicleDetailFragment
+import com.ibm.rides.presentation.vehicle.VehicleViewModel
+import com.ibm.rides.presentation.vehicle.vehicledetail.VehicleDetailFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -28,11 +31,8 @@ class VehicleListFragment : Fragment() {
     private var _binding: FragmentVehicleListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: VehicleListViewModel by viewModels()
+    private val viewModel: VehicleViewModel by viewModels()
     private lateinit var vehicleAdapter: VehicleAdapter
-
-    private var defaultFetchJob: Job? = null
-    private val defaultFetchDelay: Long = 5000
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,29 +42,46 @@ class VehicleListFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        (activity as? AppCompatActivity)?.apply {
+            supportActionBar?.setDisplayHomeAsUpEnabled(false) // Show back button
+            supportActionBar?.title = "Vehicle List"
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
         observeViewModel()
+        binding.loadingProgressBar.visibility = View.GONE
 
-        startDelayedDefaultFetch()
+        setupSortOptions()
 
+        // Fetch happens only on button press
         binding.fetchButton.setOnClickListener {
             val size = binding.vehicleSizeInputEditText.text.toString().toIntOrNull()
             if (size != null && size in 1..100) {
-                viewModel.fetchVehicles(size)
+                hideKeyboard() // Hide keyboard when button is pressed
+                showLoading() // Show the loading progress only when the button is pressed
+
+                // Get the current sort option from the dropdown menu
+                val selectedSortOption = when (binding.sortOptionsSpinner.selectedItemPosition) {
+                    0 -> GetVehiclesUseCase.SortOption.VinAsc
+                    1 -> GetVehiclesUseCase.SortOption.VinDesc
+                    2 -> GetVehiclesUseCase.SortOption.MakeAndModelAsc
+                    3 -> GetVehiclesUseCase.SortOption.MakeAndModelDesc
+                    else -> GetVehiclesUseCase.SortOption.VinAsc
+                }
+
+                // Fetch vehicles with the selected sort option
+                viewModel.fetchVehicles(size, selectedSortOption)
             } else {
-                Toast.makeText(requireContext(), "Enter a valid number (1-100)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Please enter a valid number (1-100)", Toast.LENGTH_SHORT).show()
             }
         }
 
-        binding.retryButton.setOnClickListener {
-            val size = binding.vehicleSizeInputEditText.text.toString().toIntOrNull()
-            size?.let { viewModel.fetchVehicles(it) }
-        }
-
-        handleInputChanges()
     }
 
     private fun setupRecyclerView() {
@@ -75,14 +92,53 @@ class VehicleListFragment : Fragment() {
         }
     }
 
+    private fun onVehicleClicked(vehicle: VehicleResponse) {
+        val fragment = VehicleDetailFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("vehicle", vehicle)
+            }
+        }
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(com.ibm.rides.R.id.main_nav_host_fragment, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.vehiclesState.collect { state ->
                 when (state) {
-                    is Resource.Loading -> showLoading()
+                    is Resource.Loading -> showLoading() // This gets triggered only during the fetch
                     is Resource.Success -> showVehicles(state.data ?: emptyList())
                     is Resource.Error -> showError(state.message ?: "Unknown Error")
                 }
+            }
+        }
+    }
+
+    private fun setupSortOptions() {
+        // Setup a dropdown with sort options
+        val sortOptions = arrayOf("VIN Ascending", "VIN Descending", "Car Type Ascending", "Car Type Descending")
+        val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, sortOptions)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        binding.sortOptionsSpinner.adapter = adapter
+
+        // Handle selection of sort options
+        binding.sortOptionsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedSortOption = when (position) {
+                    0 -> GetVehiclesUseCase.SortOption.VinAsc
+                    1 -> GetVehiclesUseCase.SortOption.VinDesc
+                    2 -> GetVehiclesUseCase.SortOption.MakeAndModelAsc
+                    3 -> GetVehiclesUseCase.SortOption.MakeAndModelDesc
+                    else -> GetVehiclesUseCase.SortOption.VinAsc
+                }
+                // Only change the sorting of the already fetched list, no new fetch
+                viewModel.setSortOption(selectedSortOption)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing if no selection
             }
         }
     }
@@ -107,37 +163,14 @@ class VehicleListFragment : Fragment() {
         binding.errorMessageTextView.text = message
     }
 
-    private fun onVehicleClicked(vehicle: VehicleResponse) {
-        val fragment = VehicleDetailFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable("vehicle", vehicle)
-            }
-        }
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_nav_host_fragment, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun startDelayedDefaultFetch() {
-        defaultFetchJob = viewLifecycleOwner.lifecycleScope.launch {
-            delay(defaultFetchDelay)
-            val input = binding.vehicleSizeInputEditText.text.toString().toIntOrNull()
-            if (input == null) {
-                viewModel.fetchVehicles(VehicleListViewModel.DEFAULT_VEHICLE_SIZE)
-            }
-        }
-    }
-
-    private fun handleInputChanges() {
-        binding.vehicleSizeInputEditText.addTextChangedListener {
-            defaultFetchJob?.cancel()
-        }
+    // Helper function to hide the keyboard
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        defaultFetchJob?.cancel()
     }
 }

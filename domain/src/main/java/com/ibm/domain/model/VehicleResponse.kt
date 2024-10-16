@@ -9,7 +9,6 @@ data class VehicleResponse(
     val color: String,
     val carType: String,
     val kilometrage: Int
-    // You can add more fields if needed
 ) : Parcelable
 
 

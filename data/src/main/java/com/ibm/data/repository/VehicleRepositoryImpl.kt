@@ -1,11 +1,11 @@
 package com.ibm.data.repository
 
+import com.ibm.core.Resource
 import com.ibm.data.remote.VehicleApi
 import com.ibm.domain.model.VehicleResponse
 import com.ibm.domain.repository.VehicleRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import com.ibm.core.common.Resource
 import kotlinx.coroutines.flow.flow
 
 class VehicleRepositoryImpl @Inject constructor(
