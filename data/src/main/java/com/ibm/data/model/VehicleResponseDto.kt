@@ -3,6 +3,7 @@ package com.ibm.data.model
 import com.google.gson.annotations.SerializedName
 import com.ibm.domain.model.VehicleResponse
 
+
 data class VehicleResponseDto(
     @SerializedName("id") val id: Int,
     @SerializedName("uid") val uid: String,
@@ -13,8 +14,6 @@ data class VehicleResponseDto(
     @SerializedName("drive_type") val driveType: String,
     @SerializedName("fuel_type") val fuelType: String,
     @SerializedName("car_type") val carType: String,
-    @SerializedName("car_options") val carOptions: List<String>,
-    @SerializedName("specs") val specs: List<String>,
     @SerializedName("doors") val doors: Int,
     @SerializedName("mileage") val mileage: Int,
     @SerializedName("kilometrage") val kilometrage: Int,
@@ -26,8 +25,15 @@ data class VehicleResponseDto(
             makeAndModel = makeAndModel,
             color = color,
             carType = carType,
-            kilometrage = kilometrage
+            transmission = transmission,  // Map the new fields
+            driveType = driveType,        // Map the new fields
+            fuelType = fuelType,          // Map the new fields
+            doors = doors,                // Map the new fields
+            mileage = mileage,            // Map the new fields
+            kilometrage = kilometrage,    // Map the new fields
+            licensePlate = licensePlate   // Map the new fields
         )
     }
 }
+
 

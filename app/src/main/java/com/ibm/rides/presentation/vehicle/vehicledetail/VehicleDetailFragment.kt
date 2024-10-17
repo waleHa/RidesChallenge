@@ -1,21 +1,32 @@
 package com.ibm.rides.presentation.vehicle.vehicledetail
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.ibm.domain.model.VehicleResponse
 import com.ibm.rides.databinding.FragmentVehicleDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.abs
+
+
+import androidx.viewpager2.widget.ViewPager2
+import com.ibm.rides.presentation.vehicle.vehicledetail.adapter.VehicleDetailPagerAdapter
 
 @AndroidEntryPoint
 class VehicleDetailFragment : Fragment() {
 
     private var _binding: FragmentVehicleDetailBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var vehicleDetailPagerAdapter: VehicleDetailPagerAdapter
+    private lateinit var viewPager: ViewPager2
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,32 +41,25 @@ class VehicleDetailFragment : Fragment() {
 
         // Set the toolbar title to "Vehicle Details" and enable the back button
         (activity as? AppCompatActivity)?.apply {
-            supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.title = "Vehicle Details"
         }
 
-        setHasOptionsMenu(true) // Required to enable back button functionality in fragment
+        setHasOptionsMenu(true)
 
-        // Get the passed Vehicle object from the arguments
+        // Initialize the ViewPager and Adapter
+        viewPager = binding.viewPager
         val vehicle = arguments?.getParcelable<VehicleResponse>("vehicle")
-        vehicle?.let {
-            populateVehicleDetails(it)
-        } ?: run {
-            binding.vehicleVinTextView.text = "Vehicle details not found"
-        }
-    }
 
-    private fun populateVehicleDetails(vehicle: VehicleResponse) {
-        binding.vehicleVinTextView.text = "VIN: ${vehicle.vin}"
-        binding.vehicleMakeModelTextView.text = "Model: ${vehicle.makeAndModel}"
-        binding.vehicleColorTextView.text = "Color: ${vehicle.color}"
-        binding.vehicleCarTypeTextView.text = "Car Type: ${vehicle.carType}"
+        vehicle?.let {
+            vehicleDetailPagerAdapter = VehicleDetailPagerAdapter(requireActivity() as AppCompatActivity, it)
+            viewPager.adapter = vehicleDetailPagerAdapter
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                // Handle the back button click in the toolbar
                 requireActivity().onBackPressedDispatcher.onBackPressed()
                 true
             }

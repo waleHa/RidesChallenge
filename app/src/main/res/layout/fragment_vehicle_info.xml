@@ -1,0 +1,121 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.vehicle.vehicledetail.VehicleInfoFragment">
+
+    <TextView
+        android:id="@+id/vehicle_vin_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VIN: "
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="42dp" />
+
+    <TextView
+        android:id="@+id/vehicle_make_model_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make and Model"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_vin_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_color_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Color"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_make_model_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_car_type_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Car Type"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_color_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_transmission_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Transmission"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_car_type_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_drive_type_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Drive Type"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_transmission_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_fuel_type_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fuel Type"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_drive_type_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_doors_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Doors"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_fuel_type_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_mileage_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mileage"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_doors_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+    <TextView
+        android:id="@+id/vehicle_license_plate_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="License Plate"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/vehicle_mileage_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="22dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
