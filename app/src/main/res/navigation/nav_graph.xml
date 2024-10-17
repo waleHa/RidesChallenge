@@ -1,0 +1,14 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/vehicleListFragment">
+
+    <fragment
+        android:id="@+id/vehicleListFragment"
+        android:name="com.ibm.rides.presentation.vehicle.vehiclelist.VehicleListFragment"
+        android:label="Vehicle List">
+    </fragment>
+
+
+
+</navigation>

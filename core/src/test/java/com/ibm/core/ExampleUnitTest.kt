@@ -1,4 +1,4 @@
-package com.ibm.rides
+package com.ibm.core
 
 import org.junit.Test
 
